@@ -1,0 +1,378 @@
+<!doctype html>
+<html amp lang="en">
+<head>
+  <meta charset="utf-8">
+  <script async src="https://cdn.ampproject.org/v0.js"></script>
+  <title>All Bundle Series</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <link rel="canonical" href="./index.html">
+  <meta name="viewport" content="width=device-width,minimum-scale=1,initial-scale=1">
+  <link rel="stylesheet" href="https://picocss.com/v1/pico.min.css">
+  <style amp-custom>
+    a.gold {
+    display: block;
+    width: 92% !important;
+    background: #FFD700;
+    color: black;
+    text-decoration: none;
+    padding: 12px 0px;
+    font-weight: 600;
+    border-radius: 10px;
+    margin: 6px auto;
+}
+    body {
+      background-color: #121212;
+      color: #fff;
+font-family: 'Poppins', sans-serif;
+    }
+.content {
+    text-align: center;
+}
+h1 {
+    font-weight: 700;  /* Bold */
+}
+h2 {
+    color: #FFD700; 
+}
+img {
+    width: 40%!important;
+}
+p {
+    margin-bottom: 50px;
+}
+body {
+    padding-left: 25px !important;
+    padding-right: 25px !important;
+}
+    .gold {
+      color: #FFD700;
+    }
+    .header {
+      text-align: center;
+      padding: 20px 0 0 0;
+    }
+    .content img {
+      width: 100%;
+      height: auto;
+    }
+    .sticky-button {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: #333;
+      padding: 10px 0;
+      text-align: center;
+    }
+.full-width-image1,
+.full-width-image2 {
+    width: 100% !important;
+    display: block;
+border-radius:10px;
+}
+.logo {
+    width: 60% !important;
+    display: block;
+margin: 0 auto;
+}
+img.full-width-image2 {
+    margin-top: -20px;
+}
+.audio-player {
+  height: 50px;
+  width: 350px;
+  background: #444;
+  box-shadow: 0 0 20px 0 #000a;
+
+  font-family: arial;
+  color: white;
+  font-size: 0.75em;
+  overflow: hidden;
+
+  display: grid;
+  grid-template-rows: 6px auto;
+  .timeline {
+    background: rgb(255, 0, 0);
+    width: 100%;
+    position: relative;
+    cursor: pointer;
+    box-shadow: 0 2px 10px 0 #0008;
+    .progress {
+      background: coral;
+      width: 0%;
+      height: 100%;
+      transition: 0.25s;
+    }
+  }
+  .controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    padding: 0 20px;
+
+    > * {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .toggle-play {
+      &.play {
+        cursor: pointer;
+        position: relative;
+        left: 0;
+        height: 0;
+        width: 0;
+        border: 7px solid #0000;
+        border-left: 13px solid white;
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+      &.pause {
+        height: 15px;
+        width: 20px;
+        cursor: pointer;
+        position: relative;
+        &:before {
+          position: absolute;
+          top: 0;
+          left: 0px;
+          background: white;
+          content: "";
+          height: 15px;
+          width: 3px;
+        }
+        &:after {
+          position: absolute;
+          top: 0;
+          right: 8px;
+          background: white;
+          content: "";
+          height: 15px;
+          width: 3px;
+        }
+        &:hover {
+          transform: scale(1.1);
+        }
+      }
+    }
+    .time {
+      display: flex;
+
+      > * {
+        padding: 2px;
+      }
+    }
+    .volume-container {
+      cursor: pointer;
+      .volume-button {
+        height: 26px;
+        display: flex;
+        align-items: center;
+        .volume {
+          transform: scale(0.7);
+        }
+      }
+      
+      position: relative;
+      z-index: 2;
+      .volume-slider {
+        position: absolute;
+        left: -3px; top: 15px;
+        z-index: -1;
+        width: 0;
+        height: 15px;
+        background: white;
+        box-shadow: 0 0 20px #000a;
+        transition: .25s;
+        .volume-percentage {
+          background: coral;
+          height: 100%;
+          width: 75%;
+        }
+      }
+      &:hover {
+        .volume-slider {
+          left: -123px;
+          width: 120px;
+        }
+      }
+    }
+  }
+}
+
+  </style>
+ <script>
+// Possible improvements:
+// - Change timeline and volume slider into input sliders, reskinned
+// - Change into Vue or React component
+// - Be able to grab a custom title instead of "Music Song"
+// - Hover over sliders to see preview of timestamp/volume change
+
+const audioPlayer = document.querySelector(".audio-player");
+const audio = new Audio(
+  "mp3.mp3"
+);
+console.dir(audio);
+
+audio.addEventListener(
+  "loadeddata",
+  () => {
+    audioPlayer.querySelector(".time .length").textContent = getTimeCodeFromNum(
+      audio.duration
+    );
+    audio.volume = .75;
+  },
+  false
+);
+
+//click on timeline to skip around
+const timeline = audioPlayer.querySelector(".timeline");
+timeline.addEventListener("click", e => {
+  const timelineWidth = window.getComputedStyle(timeline).width;
+  const timeToSeek = e.offsetX / parseInt(timelineWidth) * audio.duration;
+  audio.currentTime = timeToSeek;
+}, false);
+
+//click volume slider to change volume
+const volumeSlider = audioPlayer.querySelector(".controls .volume-slider");
+volumeSlider.addEventListener('click', e => {
+  const sliderWidth = window.getComputedStyle(volumeSlider).width;
+  const newVolume = e.offsetX / parseInt(sliderWidth);
+  audio.volume = newVolume;
+  audioPlayer.querySelector(".controls .volume-percentage").style.width = newVolume * 100 + '%';
+}, false)
+
+//check audio percentage and update time accordingly
+setInterval(() => {
+  const progressBar = audioPlayer.querySelector(".progress");
+  progressBar.style.width = audio.currentTime / audio.duration * 100 + "%";
+  audioPlayer.querySelector(".time .current").textContent = getTimeCodeFromNum(
+    audio.currentTime
+  );
+}, 500);
+
+//toggle between playing and pausing on button click
+const playBtn = audioPlayer.querySelector(".controls .toggle-play");
+playBtn.addEventListener(
+  "click",
+  () => {
+    if (audio.paused) {
+      playBtn.classList.remove("play");
+      playBtn.classList.add("pause");
+      audio.play();
+    } else {
+      playBtn.classList.remove("pause");
+      playBtn.classList.add("play");
+      audio.pause();
+    }
+  },
+  false
+);
+
+audioPlayer.querySelector(".volume-button").addEventListener("click", () => {
+  const volumeEl = audioPlayer.querySelector(".volume-container .volume");
+  audio.muted = !audio.muted;
+  if (audio.muted) {
+    volumeEl.classList.remove("icono-volumeMedium");
+    volumeEl.classList.add("icono-volumeMute");
+  } else {
+    volumeEl.classList.add("icono-volumeMedium");
+    volumeEl.classList.remove("icono-volumeMute");
+  }
+});
+
+//turn 128 seconds into 2:08
+function getTimeCodeFromNum(num) {
+  let seconds = parseInt(num);
+  let minutes = parseInt(seconds / 60);
+  seconds -= minutes * 60;
+  const hours = parseInt(minutes / 60);
+  minutes -= hours * 60;
+
+  if (hours === 0) return `${minutes}:${String(seconds % 60).padStart(2, 0)}`;
+  return `${String(hours).padStart(2, 0)}:${minutes}:${String(
+    seconds % 60
+  ).padStart(2, 0)}`;
+}
+</script>
+</head>
+<body>
+  <div class="header">
+    <img src="logo.png" alt="Logo" class="logo">
+  </div>
+  <div class="content">
+<br><img src="12.jpg" alt="Full Width Image" class="full-width-image1">
+<br><audio controls>
+  <source src="mp3.mp3"  type="audio/mp3">
+</audio> 
+    <h1>For $4.95, secure your membership forever, and get Instant Access to:</h1>
+    <img src="0.webp" alt="Full Width Image" class="full-width-image2">
+<img src="1.webp" alt="Hustler's University Image">    
+<h2 class="gold">1) Hustler's University</h2>
+    
+    <p>Andrew Tate's Hustlers University is an online program that teaches 100 business lessons covering topics from mindset to sales and hiring. The course is aimed at young entrepreneurs and is highly recommended as one of the best on the internet. The program includes 100 video lessons presented by Andrew Tate himself.</p>
+
+
+    <img src="2.webp" alt="Iron Mind Program Image" class="40">
+ <h2>2) Iron Mind Program</h2>
+    <p>"IRON MIND" is a 5-part video course that aims to increase viewers' discipline, awareness, worldview, frame, and mental fortitude. The course promises to help eliminate inaction and develop the mindset necessary for achieving success.</p>
+
+
+    <img src="3.webp" alt="Tristan Tate God Mode Image" class="40">
+    <h2>3) Tristan Tate God Mode</h2>
+    <p>Tristan Tate's 4-part series on seduction offers unique techniques, basic principles, and real-life scenarios to give a detailed guide on seducing women of any category. The course promises to be the ultimate blueprint of suave, where viewers can learn to be calm and collected in any situation from the King of Smooth himself. The course is focused on mastering the art of seduction.</p>
+
+
+    <img src="4.webp" alt="Fitness Program Image" class="40">
+    <h2>4) Fitness Program</h2>
+    <p>Master your most valuable asset, your body. It is a man's imperative to achieve his top physical shape. This 2 part course will show you how to stay fit while also having enough time to pursue other endeavors.</p>
+
+
+    <img src="5.webp" alt="How to Be a G Course Image" class="40">
+    <h2>5) How to Be a G Course</h2>
+    <p>Learn how to carry yourself like a Top G. Hours of content of Andrew Tate and the most elite War Room members breaking down how to be a G in the modern age. This 20 part course will cover every aspect of masculinity. Topics you will master include: dressing like a G, mindset, pulling beautiful women, traveling, networking and more.</p>
+
+
+    <img src="6.webp" alt="Body Language Image" class="40">
+    <h2>6) Body Language</h2>
+    <p>Andrew Tate's 3-part course on body language explores how to project a masculine presence and instantly make women more attracted to you and men respect you. The course is an ultimate guide to mastering the invaluable skill of physical presence, which is a direct representation of who you are and the world's first impression of you. The course promises to help viewers learn the ins and outs of masculine body language.</p>
+
+  
+    <img src="7.webp" alt="Network Brilliance Image"  class="40">
+  <h2>7) Network Brilliance</h2> 
+   <p>Andrew and the War Room give a step-by-step on the dos and don'ts of networking. Learn how to achieve a circle of high value, powerful men and how to offer value to high-net-worth individuals. This 1-part course will break down how to build a network of influential individuals who bring value and how to give value in return.</p>
+
+
+    <img src="8.webp" alt="PHD Course Image" class="40">
+    <h2>8) PHD Course</h2>
+    <p>Andrew Tate's 5-part course on attracting and maintaining women teaches how to evaluate high-value women, start conversations, text, date, escalate, and maintain positive relationships. The course promises to provide a deep understanding of the process of attracting women, from start to finish, and master the art of male-female dynamics.</p>
+
+
+    <img src="9.webp" alt="Master Chess Image" class="40">
+    <h2>9) Master Chess</h2>
+    <p>Chess applies perfectly to life. Arrange your pieces to create a position of strength and ensure you survive and prosper. In this crash course for beginners, Tate and international master Erik Kislick teach you everything from how to move the pieces right up to how to trap a queen and conquer the world. This course includes over 2 and a half hours of detailed modular content and demonstrations.</p>
+    <!-- Add the rest of the courses here -->
+  </div>
+  <div class="accordion">
+    <details>
+      <summary>Refund Policy</summary>
+      <p>All sales are final. Once the payment is made, you will receive the files instantly. Due to the digital nature of the products, refunds are not available after purchase.</p>
+    </details>
+    <details>
+      <summary>Terms and Conditions</summary>
+      <p>By making a purchase, you agree to the following terms: The files will be available for instant download after payment. The buyer is responsible for ensuring the compatibility of the files with their systems. Redistribution or resale of the files is strictly prohibited.</p>
+    </details>
+    <details>
+      <summary>Contact Information</summary>
+      <p>For any inquiries or support, please reach out to us at <a href="mailto:hi@hustlersuniverse.com">hi@hustlersuniverse.com</a>.</p>
+    </details>
+  </div>
+</br></br></br></br></br></br></br>
+  <div class="sticky-button">
+    <a href="https://t.co/JxpCfX89uq" class="gold">Download for $4.95</a>
+  </div>
+</body>
+</html>
